@@ -19,6 +19,10 @@ var bot = controller.spawn({
 
 var witbot = Witbot(witToken);
 
+controller.on('bot_channel_join', function (bot, message) {
+  bot.reply(message, "I'm here!");
+});
+
 controller.hears('.*', ['direct_message','direct_mention','mention','ambient'],function(bot, message){
     witbot.process(message.text, bot, message);
 });
@@ -59,26 +63,9 @@ witbot.hears('call_me', 0.5, function(bot, message, outcome) {
         }
             bot.reply(message,'Got it. I will call you *' + user.name + '* from now on.');
     });
-});
+}); 
 
-controller.on('bot_channel_join', function (bot, message) {
-  bot.reply(message, "I'm here!");
-});
-
-controller.hears(['hello', 'hi'], ['direct_mention'], function (bot, message) {
-  bot.reply(message, 'Hello.');
-});
-
-controller.hears(['hello', 'hi'], ['direct_message'], function (bot, message) {
-  bot.reply(message, 'Hello.');
-  bot.reply(message, 'It\'s nice to talk to you directly.');
-});
-
-controller.hears('.*', ['mention'], function (bot, message) {
-  bot.reply(message, 'You really do care about me. :heart:');
-});
-
-controller.hears('help', ['direct_message', 'direct_mention'], function (bot, message) {
+witbot.hears('help', 0.5, function (bot, message) {
   var help = 'I will respond to the following messages: \n' +
       '`bot hi` for a simple message.\n' +
       '`bot attachment` to see a Slack attachment message.\n' +
@@ -87,7 +74,7 @@ controller.hears('help', ['direct_message', 'direct_mention'], function (bot, me
   bot.reply(message, help);
 });
 
-controller.hears(['attachment'], ['direct_message', 'direct_mention'], function (bot, message) {
+witbot.hears('attachment', 0.5, function (bot, message) {
   var text = 'Beep Beep Boop is a ridiculously simple hosting platform for your Slackbots.';
   var attachments = [{
     fallback: text,
@@ -104,8 +91,4 @@ controller.hears(['attachment'], ['direct_message', 'direct_mention'], function 
   }, function (err, resp) {
     console.log(err, resp);
   });
-});
-
-controller.hears('.*', ['direct_message', 'direct_mention'], function (bot, message) {
-  bot.reply(message, 'Sorry <@' + message.user + '>, I don\'t understand. \n');
 });
