@@ -23,6 +23,44 @@ controller.hears('.*', ['direct_message','direct_mention','mention','ambient'],f
     witbot.process(message.text, bot, message);
 });
 
+witbot.hears('how_are_you', 0.5, function (bot, message, outcome) {
+  bot.api.reactions.add({
+      timestamp: message.ts,
+      channel: message.channel,
+      name: 'robot_face',
+  },function(err, res) {
+      if (err) {
+          bot.botkit.log('Failed to add emoji reaction :(',err);
+      }
+  });
+  controller.storage.users.get(message.user,function(err, user) {
+      if (user && user.name) {
+          bot.reply(message,'Hello ' + user.name + '!!');
+      } else {
+          bot.reply(message,'Hello.');
+      }
+  });
+});
+
+witbot.hears('call_me', 0.5, function(bot, message, outcome) {
+    if(!outcome.entities.contact || outcome.entities.contact.lenght === 0){
+        bot.reply(message, 'I can remember your name, but I need to know first');
+        return;
+    }
+    var user = {
+        id: message.user,
+    };
+    user.name = outcome.entities.contact[0].value;
+    controller.storage.users.save(user,function(err, id) {
+        if(err){
+            console.error(err);
+            bot.reply(message, 'Uh oh, there was a problem to remember your name, sorry!');
+            return;
+        }
+            bot.reply(message,'Got it. I will call you *' + user.name + '* from now on.');
+    });
+});
+
 controller.on('bot_channel_join', function (bot, message) {
   bot.reply(message, "I'm here!");
 });
