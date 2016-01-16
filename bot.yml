@@ -1,3 +1,7 @@
 name: Sally
 description: Sally a bot with steroids
 avatar: avatar.png
+config:
+  - name: WIT_TOKEN
+    friendly_name: The Wit.ai API WIT_TOKEN
+    info: This is the wit  api token for your app on wit.ai
